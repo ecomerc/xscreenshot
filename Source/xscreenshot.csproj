@@ -55,9 +55,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="iOS\iOSHelpers.cs" />
+    <Compile Include="iOS\Simulator.cs" />
+    <Compile Include="iOS\StatusMagic.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimulatorHelpers.cs" />
+    <Compile Include="iOS\SimulatorHelpers.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
