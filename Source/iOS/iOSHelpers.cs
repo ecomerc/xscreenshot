@@ -44,10 +44,13 @@ namespace xscreenshot.iOS {
                     iOS.SimulatorHelpers.CleanSimulator(device.UDID);
 
                     if (Utilities.IsSet(Config.Global.iOS.SimulatorStatusMagicPath)) {
+                        Console.WriteLine("Building Magic Status from " + Config.Global.iOS.SimulatorStatusMagicPath);
                         var statusMagic = StatusMagic.Build(Config.Global.iOS.SimulatorStatusMagicPath, device.UDID);
                         SimulatorHelpers.StartSimulator(device.UDID);
+                        System.Threading.Thread.Sleep(500);
                         StatusMagic.Install();
                         StatusMagic.Launch();
+                        System.Threading.Thread.Sleep(500);
                     }
 
                     string outputPath = ((string)Config.Global.iOS.OutputPath).ExpandPath();
@@ -64,9 +67,10 @@ namespace xscreenshot.iOS {
                                .DeviceIdentifier(device.UDID)
                            .StartApp();
 
+                        //This is harmless but forces the app to be present
+                        app.DismissKeyboard();
                         iOS.SimulatorHelpers.DisableHardwareKeyboard();
                         iOS.SimulatorHelpers.ResetScale();
-
                         simulatorTest(app, outputPath);
 
                         app = null;
