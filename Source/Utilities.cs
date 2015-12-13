@@ -43,11 +43,11 @@ namespace xscreenshot {
 
         public static void Run(string command, string arguments, string workingDir = null, bool useShellExecute = false) {
             var pi = new ProcessStartInfo(command, arguments) { UseShellExecute = useShellExecute };
-            if (string.IsNullOrWhiteSpace(workingDir)) {
+            if (!string.IsNullOrWhiteSpace(workingDir)) {
                 pi.WorkingDirectory = workingDir;
             }
-            Process.Start(pi);
-
+            var process = Process.Start(pi);
+			process.WaitForExit ();
         }
 
 
@@ -59,7 +59,7 @@ namespace xscreenshot {
                 return obj;
             }
             if (obj is string) {
-                return string.IsNullOrWhiteSpace(obj);
+                return !string.IsNullOrWhiteSpace(obj);
             }
                 
             return true;

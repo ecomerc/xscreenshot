@@ -42,10 +42,9 @@ namespace xscreenshot.iOS {
 
 
                     iOS.SimulatorHelpers.CleanSimulator(device.UDID);
-
                     if (Utilities.IsSet(Config.Global.iOS.SimulatorStatusMagicPath)) {
                         Console.WriteLine("Building Magic Status from " + Config.Global.iOS.SimulatorStatusMagicPath);
-                        var statusMagic = StatusMagic.Build(Config.Global.iOS.SimulatorStatusMagicPath, device.UDID);
+                        StatusMagic.Build(Config.Global.iOS.SimulatorStatusMagicPath, device.UDID);
                         SimulatorHelpers.StartSimulator(device.UDID);
                         System.Threading.Thread.Sleep(500);
                         StatusMagic.Install();
