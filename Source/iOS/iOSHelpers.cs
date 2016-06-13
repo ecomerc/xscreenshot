@@ -17,13 +17,28 @@ namespace xscreenshot.iOS {
         }
 
 
+        internal static string ExecuteApplescriptWithOutput(string script) {
+
+            return Utilities.RunWithOutput("osascript", string.Format("-e '{0}' 0", script));
+
+        }
+
+
         internal static void RunSimulatorsForAction(Action<Xamarin.UITest.IApp, string> simulatorTest) {
             string path = ((string)Config.Global.iOS.DevicesPath).ExpandPath();
             if (Directory.Exists(path)) {
                 Console.WriteLine(string.Format("Loading devices from: {0}", path));
 
+                IEnumerable<string> languages = null;
+                if (Utilities.IsSet(Config.Global.iOS.ExcludeDevices) && Config.Global.iOS.ExcludeDevices.Length > 0) {
+                    languages = Config.Global.iOS.Languages;
+                }
+                if (languages == null || languages.Count() == 0) {
+                    languages = new[] { "" };
+                }
 
-                IEnumerable<string> excludedDevices = null; ;
+
+                IEnumerable<string> excludedDevices = null; 
                 if (Utilities.IsSet(Config.Global.iOS.ExcludeDevices) && Config.Global.iOS.ExcludeDevices.Length > 0) {
                     excludedDevices = Config.Global.iOS.ExcludeDevices;
                 }
@@ -34,45 +49,69 @@ namespace xscreenshot.iOS {
 
                 iOS.SimulatorHelpers.ShutdownSimulator();
 
-                var devices = iOS.SimulatorHelpers.LoadSimulators(path, includeDevices, excludedDevices, Config.Global.iOS.OSVersion);
+                IEnumerable<Simulator> devices = iOS.SimulatorHelpers.LoadSimulators(path, includeDevices, excludedDevices, Config.Global.iOS.OSVersion);
 
+
+
+
+                string outputPath = ((string)Config.Global.iOS.OutputPath).ExpandPath();
+                string appPath = ((string)Config.Global.iOS.AppPath).ExpandPath();
+                var bundle = SimulatorHelpers.GetBundleIdentifierFromApp(appPath);
+                Console.WriteLine("BundleId: " + bundle);
 
                 foreach (Simulator device in devices) {
                     Console.WriteLine(string.Format("Beginning screenshots for device: {0} {1} {2}", device.Name, device.UDID, device.iOSVersion));
-
-
-                    iOS.SimulatorHelpers.CleanSimulator(device.UDID);
+                    
                     if (Utilities.IsSet(Config.Global.iOS.SimulatorStatusMagicPath)) {
                         Console.WriteLine("Building Magic Status from " + Config.Global.iOS.SimulatorStatusMagicPath);
-                        StatusMagic.Build(Config.Global.iOS.SimulatorStatusMagicPath, device.UDID);
-                        SimulatorHelpers.StartSimulator(device.UDID);
-                        System.Threading.Thread.Sleep(500);
-                        StatusMagic.Install();
-                        StatusMagic.Launch();
-                        System.Threading.Thread.Sleep(500);
+                        StatusMagic.Build(Config.Global.iOS.SimulatorStatusMagicPath, "iOS", new[] { device.UDID });
+                        System.Threading.Thread.Sleep(1000);
                     }
-
-                    string outputPath = ((string)Config.Global.iOS.OutputPath).ExpandPath();
-                    string outputFile = Path.Combine(outputPath, device.Name + "." + device.iOSVersion);
-                    string appPath = ((string)Config.Global.iOS.AppPath).ExpandPath();
-
-                    Directory.CreateDirectory(outputPath);
 
                     try {
 
+                        //SimulatorHelpers.Install(appPath);
+                        // SimulatorHelpers.Launch(bundle);
 
-                        Xamarin.UITest.IApp app = Xamarin.UITest.ConfigureApp.iOS.EnableLocalScreenshots()
-                               .AppBundle(appPath)
-                               .DeviceIdentifier(device.UDID)
-                           .StartApp();
 
-                        //This is harmless but forces the app to be present
-                        app.DismissKeyboard();
-                        iOS.SimulatorHelpers.DisableHardwareKeyboard();
-                        iOS.SimulatorHelpers.ResetScale();
-                        simulatorTest(app, outputPath);
+                        foreach (var language in languages) {
+                            iOS.SimulatorHelpers.ShutdownSimulator();
+                            iOS.SimulatorHelpers.CleanSimulator(device.UDID);
+                            iOS.SimulatorHelpers.DisableAutocorrect(device.UDID);
 
-                        app = null;
+                            if (Utilities.IsSet(Config.Global.iOS.SimulatorStatusMagicPath)) {
+                                SimulatorHelpers.StartSimulator(device.UDID);
+                                Console.WriteLine("Installing status magic");
+                                StatusMagic.Install("iOS");
+                                StatusMagic.Launch();
+                            }
+
+                            string outputPathFinal = Path.Combine(outputPath, language);
+                            Directory.CreateDirectory(outputPathFinal);
+
+                            string outputFile = Path.Combine(outputPathFinal, device.Name + "." + device.iOSVersion);
+
+
+
+
+                            var lang = string.IsNullOrWhiteSpace(language) ? "" : string.Format(" -AppleLanguages \"({0})\"", language);
+
+                            Cecil.IncreaseFeatures.SetAdditionalLaunchParametersForiOS(lang);
+
+                            Xamarin.UITest.IApp app = Xamarin.UITest.ConfigureApp.iOS.EnableLocalScreenshots()
+                                   .AppBundle(appPath)
+                                   .DeviceIdentifier(device.UDID)
+                                   .StartApp();
+                            
+                            iOS.SimulatorHelpers.DisableHardwareKeyboard();
+                            iOS.SimulatorHelpers.ResetScale();
+
+                            //This is harmless but forces the app to be present                        
+                            app.DismissKeyboard();
+                            simulatorTest(app, outputFile);
+                            Console.WriteLine("Completed Simulation");
+                            app = null;
+                        }
 
                     } catch (Exception ex) {
                         Console.WriteLine(string.Format("Could not run test: {0}", ex.Message));
@@ -80,7 +119,9 @@ namespace xscreenshot.iOS {
 
                     if (Utilities.IsSet(Config.Global.iOS.SimulatorStatusMagicPath)) {
                         //Reset the statusbar
-                        StatusMagic.Install();
+                        Console.WriteLine("Reinstallating StatusMagic");
+                        StatusMagic.Install("iOS"); //Close the magic app
+                        Console.WriteLine("Launching StatusMagic");
                         StatusMagic.Launch();
                     }
 

@@ -36,6 +36,22 @@
     <StartupObject>xscreenshot.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Mdb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Pdb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>packages\Mono.Cecil.0.9.6.1\lib\net45\Mono.Cecil.Rocks.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -50,11 +66,15 @@
     <Reference Include="JsonFx, Version=2.0.1209.2802, Culture=neutral, PublicKeyToken=315052dd637f8a52">
       <HintPath>packages\JsonFx.2.0.1209.2802\lib\net40\JsonFx.dll</HintPath>
     </Reference>
-    <Reference Include="Xamarin.UITest, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>packages\Xamarin.UITest.1.2.0\lib\Xamarin.UITest.dll</HintPath>
+    <Reference Include="Xamarin.UITest, Version=1.3.8.1491, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Xamarin.UITest.1.3.8.1491-dev\lib\Xamarin.UITest.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cecil\IncreaseFeatures.cs" />
+    <Compile Include="Cecil\StringHelper.cs" />
+    <Compile Include="Core\SystemManager.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="iOS\iOSHelpers.cs" />
     <Compile Include="iOS\Simulator.cs" />
@@ -70,6 +90,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>move /y "$(TargetDir)Xamarin.UITest.dll" "$(TargetDir)Xamarin.UITest.Original.dll"
+copy /y "$(TargetPath)" "C:\Users\peter\Projects\industries\Zueblin\Deployment\xs"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

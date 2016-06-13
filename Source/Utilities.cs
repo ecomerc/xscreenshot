@@ -47,9 +47,29 @@ namespace xscreenshot {
                 pi.WorkingDirectory = workingDir;
             }
             var process = Process.Start(pi);
-			process.WaitForExit ();
+            process.WaitForExit ();
+
+
         }
 
+
+        public static string RunWithOutput(string command, string arguments, string workingDir = null, bool useShellExecute = false) {
+            var pi = new ProcessStartInfo(command, arguments) { UseShellExecute = useShellExecute,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            };
+            if (!string.IsNullOrWhiteSpace(workingDir)) {
+                pi.WorkingDirectory = workingDir;
+            }
+            var sb = new StringBuilder();
+            var process = Process.Start(pi);
+            while (!process.StandardOutput.EndOfStream) {
+                sb.AppendLine( process.StandardOutput.ReadLine());
+                // do something with line
+            }
+            return sb.ToString();
+
+        }
 
         public static bool IsSet(dynamic obj) {
             if (obj == null) {
@@ -68,16 +88,29 @@ namespace xscreenshot {
 
 
         public static object Eval(string code) {
+
+
+            var path = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            path = System.IO.Path.GetDirectoryName(path);
+            path = System.IO.Path.Combine(path, "Xamarin.UITest.Original.dll");
+
+            if (File.Exists(typeof(Xamarin.UITest.IApp).Assembly.Location))
+                path = typeof(Xamarin.UITest.IApp).Assembly.Location;
+
             var csc = new CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
             var p = new CompilerParameters(new[] { "mscorlib.dll", "System.Core.dll" }, null, true);
-            p.ReferencedAssemblies.Add(typeof(Xamarin.UITest.IApp).Assembly.Location);
+            
+            p.ReferencedAssemblies.Add(path);
             p.GenerateInMemory = true; p.GenerateExecutable = false;
-            CompilerResults r = csc.CompileAssemblyFromSource(p, "using System; class p {public static void c(Xamarin.UITest.IApp app, Action<string> Screenshot){" + code + "}}");
+            var type = "";
+
+            CompilerResults r = csc.CompileAssemblyFromSource(p, "using System; class p {public static void c(Xamarin.UITest.IApp app, Action<string> Screenshot, Action<string, string> EnterTextInto){" + code + "}}");
             if (r.Errors.Count > 0) { r.Errors.Cast<CompilerError>().ToList().ForEach(error => Console.WriteLine(error.ErrorText)); return null; }
             System.Reflection.Assembly a = r.CompiledAssembly;
             var instance = a.CreateInstance("p");
             return instance;
         }
+        
 
     }
 }

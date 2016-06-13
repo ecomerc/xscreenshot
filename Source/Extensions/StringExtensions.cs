@@ -4,12 +4,14 @@ using System.Collections.Generic;
 namespace xscreenshot.Extensions {
     public static class StringExtensions {
 
-        public static bool ContainsListAny(this string @string, IEnumerable<string> list) {
+        public static bool ContainsListAny(this string @string, IEnumerable<string> list, bool ignoreCase = true) {
             if (string.IsNullOrEmpty(@string))
                 return false;
 
             foreach (var item in list) {
-                if (@string.Contains(item)) {
+                if (ignoreCase && @string.ToLowerInvariant().Contains(item.ToLowerInvariant())) {
+                    return true;
+                } else if (@string.Contains(item)) {
                     return true;
                 }
             }
