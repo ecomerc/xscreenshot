@@ -26,41 +26,69 @@ namespace xscreenshot {
 
         public string MagicPath { get; set; }
 
+        public void FixPaths()
+        {
+            MagicPath = FixPath(MagicPath);
+            AppPath = FixPath(AppPath);
+            Config = FixPath(Config);
+            Script = FixPath(Script);
 
+        }
+
+        private string FixPath(string path) {
+            if (path.StartsWith("::/"))
+                return path.Substring(2);
+
+            return path;
+        }
     }
+
+    
 
     class Program {
 
 
         static void Main(string[] args) {
+            Console.WriteLine(string.Join("::", args));
+            for (var i = 0; i < args.Length; i++) 
+                if (args[i][0] == '/')
+                    args[i] = "::" + args[i];
+
 
             var p = new Fclp.FluentCommandLineParser<ApplicationArguments>() { IsCaseSensitive = false };
 
             // specify which property the value will be assigned too.
             p.Setup(arg => arg.Script)
              .As('s', "script") // define the short and long option name
+             .WithDescription("Script file to run once the emulator is started")
              .Required(); // using the standard fluent Api to declare this Option as required.
 
             p.Setup(arg => arg.Config)
              .As('c', "config")
+             .WithDescription("Configuration file with settings")
              .Required();
 
             p.Setup(arg => arg.Tests)
              .As('t', "test")
+             .WithDescription("Run tests do not run simulator")
              .SetDefault(false);
 
             p.Setup(arg => arg.Platform)
              .As('p', "platform")
+             .WithDescription("Select platform, ios/android/wp")
              .SetDefault(ApplicationArguments.PlatformEnum.iOS);
 
             p.Setup(arg => arg.MagicPath)
-                .As("magic");
+                .As("magic")
+                .WithDescription("Path to StatusMagic source");
 
             p.Setup(arg => arg.AppPath)
-                .As("appPath");
+                .As("appPath")
+                .WithDescription("Path to app file");
 
             p.Setup(arg => arg.AppName)
-                .As("appName");
+                .As("appName")
+                .WithDescription("Name of the app");
 
             p.SetupHelp("h", "help", "?").Callback(s => Console.WriteLine(s));
 
