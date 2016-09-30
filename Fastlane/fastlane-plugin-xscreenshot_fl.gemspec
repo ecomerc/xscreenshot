@@ -6,11 +6,11 @@ require 'fastlane/plugin/xscreenshot_fl/version'
 Gem::Specification.new do |spec|
   spec.name          = 'fastlane-plugin-xscreenshot_fl'
   spec.version       = Fastlane::XscreenshotFl::VERSION
-  spec.author        = %q{Peter}
-  spec.email         = %q{peter@ecomerc.com}
+  spec.author        = %q{EcoMerc}
+  spec.email         = %q{xscreenshot@ecomerc.com}
 
   spec.summary       = %q{A reincarnation of the screenshot gem for fastlane that works for Xamarin.Forms apps}
-  # spec.homepage      = "https://github.com/<GITHUB_USERNAME>/fastlane-plugin-xscreenshot_fl"
+  # spec.homepage      = "https://github.com/ecomerc/fastlane-plugin-xscreenshot_fl"
   spec.license       = "MIT"
 
   spec.files         = Dir["lib/**/*"] + %w(README.md LICENSE)
