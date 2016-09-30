@@ -180,7 +180,7 @@ namespace xscreenshot {
                         if (args.Tests) {
                             PerformTest();
                         } else {
-                            iOS.iOSHelpers.RunSimulatorsForAction(TakeScreenshots);
+                            iOS.iOSHelpers.RunSimulatorsForAction(TakeScreenshots, args.Config);
                         }
                     } else {
                         Console.WriteLine("In order to complete iOS screenshots, you must run this program on a Mac, sorry");

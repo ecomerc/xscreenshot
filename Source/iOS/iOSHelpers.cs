@@ -45,7 +45,7 @@ namespace xscreenshot.iOS {
         }
 
 
-        internal static void RunSimulatorsForAction(Action<Xamarin.UITest.IApp, string> simulatorTest) {
+        internal static void RunSimulatorsForAction(Action<Xamarin.UITest.IApp, string> simulatorTest, string configurationPath) {
             string path = ((string)Config.Global.iOS.DevicesPath).ExpandPath();
             if (Directory.Exists(path)) {
                 Console.WriteLine(string.Format("Loading devices from: {0}", path));
@@ -75,7 +75,8 @@ namespace xscreenshot.iOS {
 
 
 
-                string outputPath = ((string)Config.Global.iOS.OutputPath).ExpandPath();
+                string outputPath = ((string)Config.Global.iOS.OutputPath).ExpandPath(configurationPath);
+                
                 string appPath = ((string)Config.Global.iOS.AppPath).ExpandPath();
                 var bundle = SimulatorHelpers.GetBundleIdentifierFromApp(appPath);
                 Console.WriteLine("BundleId: " + bundle);
