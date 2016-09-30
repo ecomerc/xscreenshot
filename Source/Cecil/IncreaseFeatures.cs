@@ -15,6 +15,8 @@ namespace xscreenshot.Cecil {
         public static void Init() {
 
             string path = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
+            Console.WriteLine("Codebase:" + path);
+
             var directory = System.IO.Path.GetDirectoryName(path);
 
 
