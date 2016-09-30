@@ -15,7 +15,7 @@ namespace xscreenshot.Cecil {
         public static void Init() {
 
             if (System.IO.File.Exists("Xamarin.UITest.dll"))
-            System.IO.File.Move("Xamarin.UITest.dll", "Xamarin.UITest.Original.dll");
+                System.IO.File.Move("Xamarin.UITest.dll", "Xamarin.UITest.Original.dll");
 
             AppDomain currentDomain = AppDomain.CurrentDomain;
             currentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
@@ -34,7 +34,7 @@ namespace xscreenshot.Cecil {
 
         private static void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args) {
             //Console.WriteLine("Loading:" + args.LoadedAssembly.FullName + " " + args.LoadedAssembly.CodeBase);
-          
+
         }
 
         static Assembly ResolveEventHandler(object sender, ResolveEventArgs args) {
@@ -49,7 +49,7 @@ namespace xscreenshot.Cecil {
             }
             return null;
         }
-        
+
 
 
 
@@ -66,9 +66,17 @@ namespace xscreenshot.Cecil {
         }
 
         private static AssemblyDefinition UpgradeAssembly() {
-            var definition = AssemblyDefinition.ReadAssembly("Xamarin.UITest.Original.dll");
 
-            
+            string path = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
+            var directory = System.IO.Path.GetDirectoryName(path);
+
+            string assemblyName = "Xamarin.UITest.Original.dll";
+            string assemblyPath = Path.Combine(directory, assemblyName);
+
+
+            var definition = AssemblyDefinition.ReadAssembly(assemblyPath);
+
+
             FieldDefinition fieldDefinition = new FieldDefinition(
                                 "AdditionalLaunchParameters",
                                 Mono.Cecil.FieldAttributes.Static | Mono.Cecil.FieldAttributes.Public, definition.MainModule.TypeSystem.String);
@@ -111,7 +119,7 @@ namespace xscreenshot.Cecil {
                 assemblyData = memStream.ToArray();
             }
             var inMemory = AppDomain.CurrentDomain.Load(assemblyData);
-                //Assembly.Load(assemblyData);
+            //Assembly.Load(assemblyData);
             return inMemory;
         }
     }
