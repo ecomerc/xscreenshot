@@ -23,12 +23,12 @@ namespace xscreenshot.Cecil {
 
 
             var initialUiTestDLL = Path.Combine(directory, "Xamarin.UITest.dll");
-            var originalUiTestDLL = Path.Combine(directory, "Xamarin.UITest.Original.dll");
-            var modifiedUiTestDLL = Path.Combine(directory, "Xamarin.UITest.Modified.dll");
+            //var originalUiTestDLL = Path.Combine(directory, "Xamarin.UITest.Original.dll");
+            //var modifiedUiTestDLL = Path.Combine(directory, "Xamarin.UITest.Modified.dll");
 
-            if (System.IO.File.Exists(initialUiTestDLL)) {
-                System.IO.File.Move(initialUiTestDLL, originalUiTestDLL);
-            }
+            //if (System.IO.File.Exists(initialUiTestDLL)) {
+            //    System.IO.File.Move(initialUiTestDLL, originalUiTestDLL);
+            //}
 
             AppDomain currentDomain = AppDomain.CurrentDomain;
             currentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
@@ -37,7 +37,7 @@ namespace xscreenshot.Cecil {
             currentDomain.AssemblyResolve += new ResolveEventHandler(ResolveEventHandler);
 
             var definition = UpgradeAssembly();
-            definition.Write(modifiedUiTestDLL);
+            //definition.Write(modifiedUiTestDLL);
             /*var path = System.Reflection.Assembly.GetExecutingAssembly().Location;
             path = System.IO.Path.GetDirectoryName(path);
             path = System.IO.Path.Combine(path, "Xamarin.UITest.dll");
@@ -87,7 +87,7 @@ namespace xscreenshot.Cecil {
             var directory = System.IO.Path.GetDirectoryName(localDirectory);
 
 
-            string assemblyName = "Xamarin.UITest.Original.dll";
+            string assemblyName = "Xamarin.UITest.dll";
             string assemblyPath = Path.Combine(directory, assemblyName);
 
 
