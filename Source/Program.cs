@@ -26,8 +26,7 @@ namespace xscreenshot {
 
         public string MagicPath { get; set; }
 
-        public void FixPaths()
-        {
+        public void FixPaths() {
             MagicPath = FixPath(MagicPath);
             AppPath = FixPath(AppPath);
             Config = FixPath(Config);
@@ -43,7 +42,7 @@ namespace xscreenshot {
         }
     }
 
-    
+
 
     class Program {
 
@@ -54,7 +53,7 @@ namespace xscreenshot {
             System.AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionTrapper;
 
 
-            for (var i = 0; i < args.Length; i++) 
+            for (var i = 0; i < args.Length; i++)
                 if (args[i][0] == '/')
                     args[i] = "::" + args[i];
 
@@ -152,7 +151,7 @@ namespace xscreenshot {
         [MethodImpl(MethodImplOptions.NoInlining)]
         static void MainCore(ApplicationArguments args) {
             if (!Utilities.TryLoadConfig(args.Config))
-                return;
+                Console.WriteLine("Please make sure you directly supply sensible inputs for the required configuration options");
 
 
             if (!Utilities.TryLoadScript(args.Script))
@@ -166,13 +165,17 @@ namespace xscreenshot {
                         JsonConfig.Config.Global.iOS.SimulatorStatusMagicPath = args.MagicPath;
 
                     if (!string.IsNullOrWhiteSpace(args.AppName)) {
-                        var path = iOS.iOSHelpers.GetXamarinAppAutomatically(args.AppName);
-                        if (File.Exists(path))
-                            JsonConfig.Config.Global.iOS.AppPath = args.AppPath;
+                        JsonConfig.Config.Global.iOS.AppName = args.AppName;
                     }
 
                     if (!string.IsNullOrWhiteSpace(args.AppPath) && File.Exists(args.AppPath))
                         JsonConfig.Config.Global.iOS.AppPath = args.AppPath;
+
+                    if (JsonConfig.Config.Global.iOS.AppPath == "{auto}") {
+                        var path = iOS.iOSHelpers.GetXamarinAppAutomatically(JsonConfig.Config.Global.iOS.AppPath);
+                        if (File.Exists(path))
+                            JsonConfig.Config.Global.iOS.AppPath = path;
+                    }
 
                     //JsonConfig.Config.SetUserConfig
 

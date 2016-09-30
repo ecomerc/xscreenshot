@@ -27,7 +27,14 @@ namespace xscreenshot.iOS {
             Console.WriteLine("Found:");
             Console.WriteLine(mainDir.Name);
 
-            return mainDir.FullName + "/bin/iPhoneSimulator/Debug/" + appName + ".app";
+            var app = (new DirectoryInfo(mainDir.FullName + "/bin/iPhoneSimulator/Debug/")).EnumerateFiles("*.app").OrderByDescending(f => f.CreationTimeUtc).FirstOrDefault();
+
+            if (app == null) {
+                Console.WriteLine("No app was found in the build directory found");
+                return null;
+            }
+
+            return app.FullName;
 
         }
 
