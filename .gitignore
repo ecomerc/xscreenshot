@@ -194,3 +194,15 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+
+
+*.gem
+Gemfile.lock
+
+## Documentation cache and generated files:
+/.yardoc/
+/_yardoc/
+/doc/
+/rdoc/
+fastlane/README.md
+fastlane/report.xml
