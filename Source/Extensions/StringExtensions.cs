@@ -25,13 +25,13 @@ namespace xscreenshot.Extensions {
         public static string ExpandPath(this string path, string currentPath) {
 
             if (path.StartsWith("~/"))
-                path = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + path.Substring(1);
+                return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), path.Substring(1));
 
             if (!string.IsNullOrWhiteSpace(currentPath)) {
                 if (path.StartsWith("./"))
                     path = path.Substring(2);
 
-                path = System.IO.Path.Combine(currentPath, path);
+                return System.IO.Path.Combine(currentPath, path);
             }
 
             return path;

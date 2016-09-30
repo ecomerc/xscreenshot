@@ -68,8 +68,7 @@ namespace xscreenshot {
 
             p.Setup(arg => arg.Config)
              .As('c', "config")
-             .WithDescription("Configuration file with settings")
-             .Required();
+             .WithDescription("Configuration file with settings");
 
             p.Setup(arg => arg.Tests)
              .As('t', "test")
@@ -172,7 +171,7 @@ namespace xscreenshot {
                         JsonConfig.Config.Global.iOS.AppPath = args.AppPath;
 
                     if (JsonConfig.Config.Global.iOS.AppPath == "{auto}") {
-                        var path = iOS.iOSHelpers.GetXamarinAppAutomatically(JsonConfig.Config.Global.iOS.AppPath);
+                        var path = iOS.iOSHelpers.GetXamarinAppAutomatically(JsonConfig.Config.Global.iOS.AppName);
                         if (File.Exists(path))
                             JsonConfig.Config.Global.iOS.AppPath = path;
                     }

@@ -96,7 +96,7 @@ namespace xscreenshot {
 
             var path = System.Reflection.Assembly.GetExecutingAssembly().Location;
             path = System.IO.Path.GetDirectoryName(path);
-            path = System.IO.Path.Combine(path, "Xamarin.UITest.Original.dll");
+            path = System.IO.Path.Combine(path, "Xamarin.UITest.dll");
 
             if (File.Exists(typeof(Xamarin.UITest.IApp).Assembly.Location))
                 path = typeof(Xamarin.UITest.IApp).Assembly.Location;
