@@ -81,7 +81,11 @@ namespace xscreenshot.Cecil {
         private static AssemblyDefinition UpgradeAssembly() {
 
             string path = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
-            var directory = System.IO.Path.GetDirectoryName(path);
+            var localDirectory = new Uri(path).LocalPath;
+            Console.WriteLine("Codebase:" + localDirectory);
+
+            var directory = System.IO.Path.GetDirectoryName(localDirectory);
+
 
             string assemblyName = "Xamarin.UITest.Original.dll";
             string assemblyPath = Path.Combine(directory, assemblyName);
