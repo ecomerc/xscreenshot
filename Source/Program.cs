@@ -50,6 +50,10 @@ namespace xscreenshot {
 
         static void Main(string[] args) {
             Console.WriteLine(string.Join("::", args));
+
+            System.AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionTrapper;
+
+
             for (var i = 0; i < args.Length; i++) 
                 if (args[i][0] == '/')
                     args[i] = "::" + args[i];
@@ -123,14 +127,26 @@ namespace xscreenshot {
                     Console.WriteLine(ex.ToString());
                 }
 
+                try {
 
-                MainCore(p.Object);
+                    MainCore(p.Object);
+                } catch (Exception ex) {
+                    Console.WriteLine(ex.ToString());
 
+                }
 
                 Console.WriteLine("All done");
 
             }
 
+        }
+
+
+        static void UnhandledExceptionTrapper(object sender, UnhandledExceptionEventArgs e) {
+            Console.WriteLine(e.ExceptionObject.ToString());
+            Console.WriteLine("Press Enter to continue");
+            Console.ReadLine();
+            Environment.Exit(1);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
