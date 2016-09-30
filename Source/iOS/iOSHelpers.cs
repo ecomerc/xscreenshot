@@ -10,6 +10,27 @@ using System.Threading.Tasks;
 namespace xscreenshot.iOS {
     internal class iOSHelpers {
 
+        internal static string GetXamarinAppAutomatically(string appName) {
+            var appPath = "~/Library/Caches/Xamarin/mtbs/builds/" + appName + "/".ExpandPath();
+            Console.WriteLine(appPath);
+
+            var mainDir = (new DirectoryInfo(appPath))
+                                .EnumerateDirectories()
+                                .OrderByDescending(d => d.LastWriteTimeUtc)
+                                .FirstOrDefault();
+            
+            if (mainDir == null) {
+                Console.WriteLine("No build directories found");
+                return null;
+            }
+
+            Console.WriteLine("Found:");
+            Console.WriteLine(mainDir.Name);
+
+            return mainDir.FullName + "/bin/iPhoneSimulator/Debug/" + appName + ".app";
+
+        }
+
         internal static void ExecuteApplescript(string script) {
 
             Utilities.Run("osascript", string.Format("-e '{0}' 0", script));
@@ -38,7 +59,7 @@ namespace xscreenshot.iOS {
                 }
 
 
-                IEnumerable<string> excludedDevices = null; 
+                IEnumerable<string> excludedDevices = null;
                 if (Utilities.IsSet(Config.Global.iOS.ExcludeDevices) && Config.Global.iOS.ExcludeDevices.Length > 0) {
                     excludedDevices = Config.Global.iOS.ExcludeDevices;
                 }
@@ -61,7 +82,7 @@ namespace xscreenshot.iOS {
 
                 foreach (Simulator device in devices) {
                     Console.WriteLine(string.Format("Beginning screenshots for device: {0} {1} {2}", device.Name, device.UDID, device.iOSVersion));
-                    
+
                     if (Utilities.IsSet(Config.Global.iOS.SimulatorStatusMagicPath)) {
                         Console.WriteLine("Building Magic Status from " + Config.Global.iOS.SimulatorStatusMagicPath);
                         StatusMagic.Build(Config.Global.iOS.SimulatorStatusMagicPath, "iOS", new[] { device.UDID });
@@ -83,7 +104,7 @@ namespace xscreenshot.iOS {
                                 SimulatorHelpers.StartSimulator(device.UDID);
                                 Console.WriteLine("Installing status magic");
                                 StatusMagic.Install("iOS");
-                                StatusMagic.Launch();
+                                StatusMagic.Launch(true);
                             }
 
                             string outputPathFinal = Path.Combine(outputPath, language);
@@ -102,7 +123,7 @@ namespace xscreenshot.iOS {
                                    .AppBundle(appPath)
                                    .DeviceIdentifier(device.UDID)
                                    .StartApp();
-                            
+
                             iOS.SimulatorHelpers.DisableHardwareKeyboard();
                             iOS.SimulatorHelpers.ResetScale();
 
@@ -120,9 +141,9 @@ namespace xscreenshot.iOS {
                     if (Utilities.IsSet(Config.Global.iOS.SimulatorStatusMagicPath)) {
                         //Reset the statusbar
                         Console.WriteLine("Reinstallating StatusMagic");
-                        StatusMagic.Install("iOS"); //Close the magic app
+                        StatusMagic.Install("iOS"); //Close the magic app by reinstalling
                         Console.WriteLine("Launching StatusMagic");
-                        StatusMagic.Launch();
+                        StatusMagic.Launch(false);
                     }
 
                 }

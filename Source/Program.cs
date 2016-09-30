@@ -6,75 +6,180 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace xscreenshot {
+
+    public class ApplicationArguments {
+
+        public enum PlatformEnum {
+            iOS,
+            Android,
+            WindowsPhone
+        }
+        public PlatformEnum Platform { get; set; }
+        public string Config { get; set; }
+        public string Script { get; set; }
+        public bool Tests { get; set; }
+
+        public bool ShowVersion { get; set; }
+
+        public string AppPath { get; set; }
+        public string AppName { get; set; }
+
+        public string MagicPath { get; set; }
+
+
+    }
+
     class Program {
 
 
         static void Main(string[] args) {
-            Cecil.IncreaseFeatures.Init();
+
+            var p = new Fclp.FluentCommandLineParser<ApplicationArguments>() { IsCaseSensitive = false };
+
+            // specify which property the value will be assigned too.
+            p.Setup(arg => arg.Script)
+             .As('s', "script") // define the short and long option name
+             .Required(); // using the standard fluent Api to declare this Option as required.
+
+            p.Setup(arg => arg.Config)
+             .As('c', "config")
+             .Required();
+
+            p.Setup(arg => arg.Tests)
+             .As('t', "test")
+             .SetDefault(false);
+
+            p.Setup(arg => arg.Platform)
+             .As('p', "platform")
+             .SetDefault(ApplicationArguments.PlatformEnum.iOS);
+
+            p.Setup(arg => arg.MagicPath)
+                .As("magic");
+
+            p.Setup(arg => arg.AppPath)
+                .As("appPath");
+
+            p.Setup(arg => arg.AppName)
+                .As("appName");
+
+            p.SetupHelp("h", "help", "?").Callback(s => Console.WriteLine(s));
 
 
-            MainCore(args);
+            p.Setup(arg => arg.ShowVersion)
+             .As('v', "version")
+             .SetDefault(false);
+
+            var result = p.Parse(args);
+
+            if (result.HelpCalled)
+                return;
+            if (result.HasErrors) {
+                Console.WriteLine(result.ErrorText);
+                Console.WriteLine("For command line argument help: [-? | -h | --help]\n\n");
+                Console.WriteLine("Exiting.");
+                return;
+            }
+
+            if (p.Object.ShowVersion) {
+                Console.WriteLine("Version ::::");
+                Console.WriteLine("For command line argument help: [-? | -h | --help]\n\n");
+                Console.WriteLine("Exiting.");
+                return;
+            }
+
+            if (result.HasErrors == false) {
+                try {
+                    Console.WriteLine("Increasing features");
+                    Cecil.IncreaseFeatures.Init();
+                } catch (Exception ex) {
+                    Console.WriteLine(ex.ToString());
+                }
 
 
-            Console.WriteLine("All done");
+                MainCore(p.Object);
+
+
+                Console.WriteLine("All done");
+
+            }
+
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static void MainCore(ApplicationArguments args) {
+            if (!Utilities.TryLoadConfig(args.Config))
+                return;
+
+
+            if (!Utilities.TryLoadScript(args.Script))
+                return;
+
+            switch (args.Platform) {
+                case ApplicationArguments.PlatformEnum.iOS:
+
+
+                    if (!string.IsNullOrWhiteSpace(args.MagicPath) && Directory.Exists(args.MagicPath))
+                        JsonConfig.Config.Global.iOS.SimulatorStatusMagicPath = args.MagicPath;
+
+                    if (!string.IsNullOrWhiteSpace(args.AppName)) {
+                        var path = iOS.iOSHelpers.GetXamarinAppAutomatically(args.AppName);
+                        if (File.Exists(path))
+                            JsonConfig.Config.Global.iOS.AppPath = args.AppPath;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(args.AppPath) && File.Exists(args.AppPath))
+                        JsonConfig.Config.Global.iOS.AppPath = args.AppPath;
+
+                    //JsonConfig.Config.SetUserConfig
+
+                    if (Core.SystemManager.OperatingSystem == Core.OS.Mac) {
+                        if (args.Tests) {
+                            PerformTest();
+                        } else {
+                            iOS.iOSHelpers.RunSimulatorsForAction(TakeScreenshots);
+                        }
+                    } else {
+                        Console.WriteLine("In order to complete iOS screenshots, you must run this program on a Mac, sorry");
+                    }
+                    break;
+
+                case ApplicationArguments.PlatformEnum.Android:
+                    // Incomplete
+
+                    // start the emulator
+
+                    Xamarin.UITest.IApp app = Xamarin.UITest.ConfigureApp.Android.EnableLocalScreenshots()
+                               .ApkFile("")
+                               .StartApp();
+
+
+                    break;
+
+                case ApplicationArguments.PlatformEnum.WindowsPhone:
+                //Todo: Windows Phone is oddly missing?
+                default:
+
+                    break;
+
+            }
+
+
+
+
+
 
         }
 
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static void MainCore(string[] args) {   // your class as shown is Program
-
-            if (args.Count() > 0 && File.Exists(args[0])) {
-                Utilities.TryLoadConfig(args[0]);
-                Utilities.TryLoadScript(args[0]);
-            }
-
-            if (args.Count() > 1 && File.Exists(args[1])) {
-                Utilities.TryLoadConfig(args[1]);
-                Utilities.TryLoadScript(args[1]);
-            }
-
-            if (args.Contains("tests", StringComparer.OrdinalIgnoreCase)) {
-                Console.WriteLine("Will do tests now");
-                Assembly[] asms = AppDomain.CurrentDomain.GetAssemblies();
-
-                foreach (var asm in asms) {
-                    Console.WriteLine(asm.FullName);
-                }
-                PerformTest();
-                Console.ReadKey();
-            }
-
-
-            if (args.Contains("ios", StringComparer.OrdinalIgnoreCase)) {
-                if (Core.SystemManager.OperatingSystem == Core.OS.Mac) {
-                    iOS.iOSHelpers.RunSimulatorsForAction(TakeScreenshots);
-                } else {
-                    Console.WriteLine("In order to complete iOS screenshots, you must run this program on a Mac, sorry");
-                }
-            }
-
-            // Incomplete
-            if (args.Contains("droid", StringComparer.OrdinalIgnoreCase)) {
-
-                // start the emulator
-
-                Xamarin.UITest.IApp app = Xamarin.UITest.ConfigureApp.Android.EnableLocalScreenshots()
-                       .ApkFile("")
-                       .StartApp();
-
-
-            }
-
-            //Todo: Windows Phone is oddly missing?
-
-
-            }
-
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
         static void PerformTest() {   // your class as shown is Program
 
+            Console.WriteLine("Will do tests now");
+            Assembly[] asms = AppDomain.CurrentDomain.GetAssemblies();
+
+            foreach (var asm in asms) {
+                Console.WriteLine(asm.FullName);
+            }
 
             var sample = Xamarin.UITest.TestPlatform.Local;
             Console.WriteLine("Got sample:" + sample.ToString());

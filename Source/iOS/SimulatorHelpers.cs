@@ -146,10 +146,13 @@ end tell");
         }
 
         internal static void Launch(string bundleid, string languageId) {
+            Launch(bundleid, languageId, "");
+        }
+        internal static void Launch(string bundleid, string languageId, string additionalArguments) {
 
             var lang = string.IsNullOrWhiteSpace(languageId) ? "" : string.Format(" -AppleLanguages \"({0})\"", languageId);
 
-            Utilities.Run("xcrun", string.Format("simctl launch booted {0}{1}", bundleid, lang));
+            Utilities.Run("xcrun", string.Format("simctl launch booted {0}{1}{2}", bundleid, lang, additionalArguments));
             System.Threading.Thread.Sleep(2000);
         }
 

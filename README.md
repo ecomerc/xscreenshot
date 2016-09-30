@@ -14,4 +14,4 @@ $ brew install xscreenshot
 
 xscreenshot contains a fastlane plugin that can be installed into your fastlane project, goto your project and add the following into your fastlane/Pluginfile
 
-gem "fastlane-plugin-xscreenshot_fl", path: "/usr/local/opt/xscreenshot"
+gem "fastlane-plugin-xscreenshot_fl", path: "/usr/local/opt/xscreenshot/lib/fastlane-plugin"

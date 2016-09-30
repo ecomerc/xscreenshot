@@ -14,29 +14,33 @@ namespace xscreenshot {
 
         public static object ScriptObject;
 
-        public static void TryLoadConfig(string file) {
+        public static bool TryLoadConfig(string file) {
             try {
                 if (File.Exists(file) && (file.EndsWith(".conf") || file.EndsWith(".config") || file.EndsWith(".json"))) {
                     var fileInfo = new FileInfo(file.ExpandPath());
                     Console.WriteLine("Loading config: " + fileInfo.FullName);
                     var config = JsonConfig.Config.ApplyJsonFromPath(fileInfo.FullName);
                     JsonConfig.Config.SetUserConfig(config);
+                    return true;
                 }
             } catch (Exception ex) {
                 Console.WriteLine(string.Format("Supplied config file was invalid: {0}", ex.Message));
             }
+            return false;
         }
 
-        public static void TryLoadScript(string file) {
+        public static bool TryLoadScript(string file) {
             try {
                 if (File.Exists(file) && (file.EndsWith(".cs") || file.EndsWith(".script"))) {
                     var fileInfo = new FileInfo(file.ExpandPath());
                     Console.WriteLine("Loading script: " + fileInfo.FullName);
                     ScriptObject = Utilities.Eval(File.ReadAllText(fileInfo.FullName));
+                    return true;
                 }
             } catch (Exception ex) {
                 Console.WriteLine(string.Format("Supplied script file was invalid: {0}", ex.Message));
             }
+            return false;
         }
 
 

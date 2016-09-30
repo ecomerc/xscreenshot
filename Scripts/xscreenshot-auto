@@ -1,0 +1,5 @@
+#!/bin/sh
+
+git clone https://github.com/shinydevelopment/SimulatorStatusMagic /tmp/xscreenshot-cache/statusmagic
+
+xscreenshot --magic "/tmp/xscreenshot-cache/statusmagic" $@

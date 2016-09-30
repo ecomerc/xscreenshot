@@ -44,7 +44,8 @@ namespace xscreenshot.iOS {
         }
 
 
-        internal static void Launch() {
+        internal static void Launch(bool enableModifications) {
+            Environment.SetEnvironmentVariable("SIMCTL_CHILD_SIMULATOR_STATUS_MAGIC_OVERRIDES", enableModifications ? "enable" : "disable");
             SimulatorHelpers.Launch( "com.shinydevelopment.SimulatorStatusMagic", "");
         }
 
