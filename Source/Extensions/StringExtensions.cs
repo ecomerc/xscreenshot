@@ -25,7 +25,7 @@ namespace xscreenshot.Extensions {
         public static string ExpandPath(this string path, string currentPath) {
 
             if (path.StartsWith("~/"))
-                return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), path.Substring(1));
+                return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), path.Substring(2));
 
             if (!string.IsNullOrWhiteSpace(currentPath)) {
                 if (path.StartsWith("./"))

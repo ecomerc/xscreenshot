@@ -11,7 +11,7 @@ namespace xscreenshot.iOS {
     internal class iOSHelpers {
 
         internal static string GetXamarinAppAutomatically(string appName) {
-            var appPath = "~/Library/Caches/Xamarin/mtbs/builds/" + appName + "/".ExpandPath();
+            var appPath = ("~/Library/Caches/Xamarin/mtbs/builds/" + appName + "/").ExpandPath();
             Console.WriteLine(appPath);
 
             var mainDir = (new DirectoryInfo(appPath))
