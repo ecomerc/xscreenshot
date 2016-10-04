@@ -23,12 +23,14 @@ namespace xscreenshot.Cecil {
 
 
             var initialUiTestDLL = Path.Combine(directory, "Xamarin.UITest.dll");
-            //var originalUiTestDLL = Path.Combine(directory, "Xamarin.UITest.Original.dll");
-            //var modifiedUiTestDLL = Path.Combine(directory, "Xamarin.UITest.Modified.dll");
+            var originalUiTestDLL = Path.Combine(directory, "Xamarin.UITest.Original.dll");
+            var modifiedUiTestDLL = Path.Combine(directory, "Xamarin.UITest.Modified.dll");
 
-            //if (System.IO.File.Exists(initialUiTestDLL)) {
-            //    System.IO.File.Move(initialUiTestDLL, originalUiTestDLL);
-            //}
+            if (System.IO.File.Exists(initialUiTestDLL)) {
+                if (File.Exists(originalUiTestDLL))
+                    File.Delete(originalUiTestDLL);
+                System.IO.File.Move(initialUiTestDLL, originalUiTestDLL);
+            }
 
             AppDomain currentDomain = AppDomain.CurrentDomain;
             currentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
@@ -37,7 +39,7 @@ namespace xscreenshot.Cecil {
             currentDomain.AssemblyResolve += new ResolveEventHandler(ResolveEventHandler);
 
             var definition = UpgradeAssembly();
-            //definition.Write(modifiedUiTestDLL);
+            definition.Write(modifiedUiTestDLL);
             /*var path = System.Reflection.Assembly.GetExecutingAssembly().Location;
             path = System.IO.Path.GetDirectoryName(path);
             path = System.IO.Path.Combine(path, "Xamarin.UITest.dll");
@@ -69,11 +71,13 @@ namespace xscreenshot.Cecil {
 
         public static void SetAdditionalLaunchParametersForiOS(string parameters) {
             var type = typeof(Xamarin.UITest.iOS.iOSApp);
+            Console.WriteLine("Codebase: " + type.Assembly.CodeBase);
             var field = type.GetField("AdditionalLaunchParameters", BindingFlags.Static | BindingFlags.Public);
             field.SetValue(null, parameters);
         }
         public static string GetAdditionalLaunchParametersForiOS() {
             var type = typeof(Xamarin.UITest.iOS.iOSApp);
+            Console.WriteLine("Codebase: "+ type.Assembly.CodeBase);
             var field = type.GetField("AdditionalLaunchParameters", BindingFlags.Static | BindingFlags.Public);
             return (string)field.GetValue(null);
         }
@@ -87,7 +91,7 @@ namespace xscreenshot.Cecil {
             var directory = System.IO.Path.GetDirectoryName(localDirectory);
 
 
-            string assemblyName = "Xamarin.UITest.dll";
+            string assemblyName = "Xamarin.UITest.Original.dll";
             string assemblyPath = Path.Combine(directory, assemblyName);
 
 
@@ -101,7 +105,7 @@ namespace xscreenshot.Cecil {
 
             var staticFieldDestination = definition.MainModule.GetType("Xamarin.UITest.iOS.iOSApp");
             staticFieldDestination.Fields.Add(fieldDefinition);
-
+            //                      "-w \"{5}\" -D \"{0}\" -t \"{1}\" \"{4}\" -e UIARESULTSPATH \"{2}\" -e UIASCRIPT \"{3}\""
             StringHelper.FindString("-w \"{5}\" -D \"{0}\" -t \"{1}\" \"{4}\" -e UIARESULTSPATH \"{2}\" -e UIASCRIPT \"{3}\"", definition,
                 (m, instString, index) => {
 

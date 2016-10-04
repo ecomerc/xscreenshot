@@ -18,6 +18,7 @@ namespace xscreenshot {
         public string Config { get; set; }
         public string Script { get; set; }
         public bool Tests { get; set; }
+        public bool Init { get; set; }
 
         public bool ShowVersion { get; set; }
 
@@ -99,15 +100,24 @@ namespace xscreenshot {
              .As('v', "version")
              .SetDefault(false);
 
+
+            p.Setup(arg => arg.Init)
+             .As('i', "init")
+             .SetDefault(false);
+
             var result = p.Parse(args);
 
             if (result.HelpCalled)
                 return;
-            if (result.HasErrors) {
-                Console.WriteLine(result.ErrorText);
-                Console.WriteLine("For command line argument help: [-? | -h | --help]\n\n");
-                Console.WriteLine("Exiting.");
-                return;
+
+            if (p.Object.Init) {
+                try {
+                    Console.WriteLine("Increasing features in init");
+                    Cecil.IncreaseFeatures.Init();
+
+                } catch (Exception ex) {
+                    Console.WriteLine(ex.ToString());
+                }
             }
 
             if (p.Object.ShowVersion) {
@@ -116,8 +126,15 @@ namespace xscreenshot {
                 Console.WriteLine("Exiting.");
                 return;
             }
+            if (p.Object.Tests) {
+                PerformTest();
+            }
 
-            if (result.HasErrors == false) {
+            if (result.HasErrors) {
+                Console.WriteLine(result.ErrorText);
+                Console.WriteLine("For command line argument help: [-? | -h | --help]\n\n");
+                Console.WriteLine("Exiting.");
+            } else {
                 try {
                     Console.WriteLine("Increasing features");
                     Cecil.IncreaseFeatures.Init();
@@ -136,6 +153,10 @@ namespace xscreenshot {
                 Console.WriteLine("All done");
 
             }
+
+#if DEBUG
+            Console.ReadLine();
+#endif
 
         }
 
