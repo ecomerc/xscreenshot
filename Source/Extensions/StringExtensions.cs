@@ -31,7 +31,7 @@ namespace xscreenshot.Extensions {
                 if (path.StartsWith("./"))
                     path = path.Substring(2);
 
-                return Path.GetFullPath(System.IO.Path.Combine(currentPath, path));
+                return System.IO.Path.GetFullPath(System.IO.Path.Combine(currentPath, path));
             }
 
             return path;
