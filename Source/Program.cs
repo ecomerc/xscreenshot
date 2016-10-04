@@ -220,7 +220,11 @@ namespace xscreenshot {
                         if (args.Tests) {
                             PerformTest();
                         } else {
-                            iOS.iOSHelpers.RunSimulatorsForAction(TakeScreenshots, args.Config);
+                            var configFolder = Directory.GetCurrentDirectory();
+                            if (!string.IsNullOrWhiteSpace(args.Config))
+                                configFolder = Path.GetDirectoryName(args.Config); ;
+
+                            iOS.iOSHelpers.RunSimulatorsForAction(TakeScreenshots, configFolder);
                         }
                     } else {
                         Console.WriteLine("In order to complete iOS screenshots, you must run this program on a Mac, sorry");

@@ -84,7 +84,7 @@ namespace xscreenshot.iOS {
 
 
 
-                string outputPath = ((string)Config.Global.iOS.OutputPath).ExpandPath(Path.GetDirectoryName(configurationPath));
+                string outputPath = ((string)Config.Global.iOS.OutputPath).ExpandPath(configurationPath);
 
 
                 if (string.IsNullOrWhiteSpace(outputPath))
