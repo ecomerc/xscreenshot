@@ -23,10 +23,10 @@ namespace xscreenshot.iOS {
                 Console.WriteLine("No build directories found");
                 return null;
             }
-            
+
             Console.WriteLine(mainDir.Name);
 
-            var app = (new DirectoryInfo(Path.Combine(mainDir.FullName , "bin/iPhoneSimulator/Debug/")))
+            var app = (new DirectoryInfo(Path.Combine(mainDir.FullName, "bin/iPhoneSimulator/Debug/")))
                 .EnumerateDirectories("*.app")
                 .OrderByDescending(f => f.CreationTimeUtc)
                 .FirstOrDefault();
@@ -84,7 +84,7 @@ namespace xscreenshot.iOS {
 
 
 
-                string outputPath = ((string)Config.Global.iOS.OutputPath).ExpandPath(configurationPath);
+                string outputPath = ((string)Config.Global.iOS.OutputPath).ExpandPath(Path.GetDirectoryName(configurationPath));
 
 
                 if (string.IsNullOrWhiteSpace(outputPath))
