@@ -113,7 +113,11 @@ namespace xscreenshot {
             if (p.Object.Init) {
                 try {
                     Console.WriteLine("Increasing features in init");
-                    Cecil.IncreaseFeatures.Init();
+                    var init = Cecil.IncreaseFeatures.Init();
+                    if (init)
+                        Console.WriteLine("UITest was already inited");
+                    else
+                        Console.WriteLine("UITest is ready to party");
 
                 } catch (Exception ex) {
                     Console.WriteLine(ex.ToString());
@@ -137,7 +141,11 @@ namespace xscreenshot {
             } else {
                 try {
                     Console.WriteLine("Increasing features");
-                    Cecil.IncreaseFeatures.Init();
+                    var init = Cecil.IncreaseFeatures.Init();
+                    if (!init) {
+                        Console.WriteLine("UITest was just inited, please restart");
+                        return;
+                    }
                 } catch (Exception ex) {
                     Console.WriteLine(ex.ToString());
                 }
