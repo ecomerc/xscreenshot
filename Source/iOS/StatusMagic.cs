@@ -21,7 +21,7 @@ namespace xscreenshot.iOS {
                 var destination = " -destination 'platform=iOS Simulator,id=" +
                     string.Join("' -destination 'platform=iOS Simulator,id=", destinations) + "'";
 
-                string xcodebuild = string.Format("-scheme SimulatorStatusMagiciOS {0} -derivedDataPath '/tmp/xscreenshot_derived/" + type + "/' clean build", destination);
+                string xcodebuild = string.Format("-scheme SimulatorStatusMagicBuild {0} -derivedDataPath '/tmp/xscreenshot_derived/" + type + "/' clean build", destination);
                 //string defaultPipe = "| tee '/tmp/xcodelogs.log' | xcpretty";
                 //string prefix = "set -o pipefail && ";
 

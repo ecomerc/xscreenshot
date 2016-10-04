@@ -1,6 +1,6 @@
 #!/bin/sh
 
 rm -f -R /tmp/xscreenshot-cache/statusmagic
-git clone https://github.com/shinydevelopment/SimulatorStatusMagic /tmp/xscreenshot-cache/statusmagic
+git clone https://github.com/ecomerc/SimulatorStatusMagic /tmp/xscreenshot-cache/statusmagic
 
 xscreenshot --magic "/tmp/xscreenshot-cache/statusmagic" $@
