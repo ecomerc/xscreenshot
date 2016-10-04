@@ -18,19 +18,21 @@ namespace xscreenshot.iOS {
                                 .EnumerateDirectories()
                                 .OrderByDescending(d => d.LastWriteTimeUtc)
                                 .FirstOrDefault();
-            
+
             if (mainDir == null) {
                 Console.WriteLine("No build directories found");
                 return null;
             }
-
-            Console.WriteLine("Found:");
+            
             Console.WriteLine(mainDir.Name);
 
-            var app = (new DirectoryInfo(mainDir.FullName + "/bin/iPhoneSimulator/Debug/")).EnumerateFiles("*.app").OrderByDescending(f => f.CreationTimeUtc).FirstOrDefault();
+            var app = (new DirectoryInfo(Path.Combine(mainDir.FullName , "bin/iPhoneSimulator/Debug/")))
+                .EnumerateDirectories("*.app")
+                .OrderByDescending(f => f.CreationTimeUtc)
+                .FirstOrDefault();
 
             if (app == null) {
-                Console.WriteLine("No app was found in the build directory found");
+                Console.WriteLine("No app was found in the build directory");
                 return null;
             }
 
@@ -83,9 +85,22 @@ namespace xscreenshot.iOS {
 
 
                 string outputPath = ((string)Config.Global.iOS.OutputPath).ExpandPath(configurationPath);
-                
+
+
+                if (string.IsNullOrWhiteSpace(outputPath))
+                    throw new ArgumentNullException("Missing output path");
+
                 string appPath = ((string)Config.Global.iOS.AppPath).ExpandPath();
+
+                if (string.IsNullOrWhiteSpace(appPath))
+                    throw new ArgumentNullException("Missing app path");
+
+
                 var bundle = SimulatorHelpers.GetBundleIdentifierFromApp(appPath);
+
+                if (string.IsNullOrWhiteSpace(bundle))
+                    throw new ArgumentNullException("Missing bundle identifier");
+
                 Console.WriteLine("BundleId: " + bundle);
 
                 foreach (Simulator device in devices) {
