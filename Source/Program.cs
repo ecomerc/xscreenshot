@@ -36,6 +36,9 @@ namespace xscreenshot {
         }
 
         private string FixPath(string path) {
+            if (string.IsNullOrWhiteSpace(path))
+                return path;
+
             if (path.StartsWith("::/"))
                 return path.Substring(2);
 
