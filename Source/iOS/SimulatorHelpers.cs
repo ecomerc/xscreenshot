@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -145,14 +146,28 @@ end tell");
             System.Threading.Thread.Sleep(2000);
         }
 
+        internal static void Launch(string bundleid) {
+            Launch(bundleid, "", "", null);
+        }
+        internal static void Launch(string bundleid, Dictionary<string, string> environmentVariables) {
+            Launch(bundleid, "", "", environmentVariables);
+        }
+
         internal static void Launch(string bundleid, string languageId) {
-            Launch(bundleid, languageId, "");
+            Launch(bundleid, languageId, "", null);
+        }
+
+        internal static void Launch(string bundleid, string languageId, Dictionary<string, string> environmentVariables) {
+            Launch(bundleid, languageId, "", environmentVariables);
         }
         internal static void Launch(string bundleid, string languageId, string additionalArguments) {
+            Launch(bundleid, languageId, additionalArguments, null);
+        }
+        internal static void Launch(string bundleid, string languageId, string additionalArguments, Dictionary<string, string> environmentVariables) {
 
             var lang = string.IsNullOrWhiteSpace(languageId) ? "" : string.Format(" -AppleLanguages \"({0})\"", languageId);
 
-            Utilities.Run("xcrun", string.Format("simctl launch booted {0}{1}{2}", bundleid, lang, additionalArguments));
+            Utilities.Run("xcrun", string.Format("simctl launch booted {0}{1}{2}", bundleid, lang, additionalArguments), null, false, environmentVariables);
             System.Threading.Thread.Sleep(2000);
         }
 

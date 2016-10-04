@@ -35,8 +35,8 @@ namespace xscreenshot.iOS {
 
 
         internal static void Install(string type) {
-            SimulatorHelpers.Install( "/tmp/xscreenshot_derived/" + type + "/Build/Products/Debug-iphonesimulator/SimulatorStatusMagic.app");
-         
+            SimulatorHelpers.Install("/tmp/xscreenshot_derived/" + type + "/Build/Products/Debug-iphonesimulator/SimulatorStatusMagic.app");
+
         }
 
         internal static void Uninstall() {
@@ -45,8 +45,12 @@ namespace xscreenshot.iOS {
 
 
         internal static void Launch(bool enableModifications) {
+            var environmentVariables = new Dictionary<string, string>();
+
             Environment.SetEnvironmentVariable("SIMCTL_CHILD_SIMULATOR_STATUS_MAGIC_OVERRIDES", enableModifications ? "enable" : "disable");
-            SimulatorHelpers.Launch( "com.shinydevelopment.SimulatorStatusMagic", "");
+            environmentVariables.Add("SIMCTL_CHILD_SIMULATOR_STATUS_MAGIC_OVERRIDES", "enable");
+
+            SimulatorHelpers.Launch("com.shinydevelopment.SimulatorStatusMagic", environmentVariables);
         }
 
 

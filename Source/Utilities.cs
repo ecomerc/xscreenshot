@@ -8,6 +8,7 @@ using System.Linq;
 using xscreenshot.Extensions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Specialized;
 
 namespace xscreenshot {
     public static class Utilities {
@@ -45,20 +46,29 @@ namespace xscreenshot {
 
 
 
-        public static void Run(string command, string arguments, string workingDir = null, bool useShellExecute = false) {
+        public static void Run(string command, string arguments, string workingDir = null, bool useShellExecute = false, Dictionary<string, string> environmentVariables = null) {
             var pi = new ProcessStartInfo(command, arguments) { UseShellExecute = useShellExecute };
+
+            foreach (var env in environmentVariables) {
+                if (pi.EnvironmentVariables.ContainsKey(env.Key))
+                    pi.EnvironmentVariables[env.Key] = env.Value;
+                else
+                    pi.EnvironmentVariables.Add(env.Key, env.Value);
+            }
+
             if (!string.IsNullOrWhiteSpace(workingDir)) {
                 pi.WorkingDirectory = workingDir;
             }
             var process = Process.Start(pi);
-            process.WaitForExit ();
+            process.WaitForExit();
 
 
         }
 
 
         public static string RunWithOutput(string command, string arguments, string workingDir = null, bool useShellExecute = false) {
-            var pi = new ProcessStartInfo(command, arguments) { UseShellExecute = useShellExecute,
+            var pi = new ProcessStartInfo(command, arguments) {
+                UseShellExecute = useShellExecute,
                 RedirectStandardOutput = true,
                 CreateNoWindow = true
             };
@@ -68,7 +78,7 @@ namespace xscreenshot {
             var sb = new StringBuilder();
             var process = Process.Start(pi);
             while (!process.StandardOutput.EndOfStream) {
-                sb.AppendLine( process.StandardOutput.ReadLine());
+                sb.AppendLine(process.StandardOutput.ReadLine());
                 // do something with line
             }
             return sb.ToString();
@@ -85,7 +95,7 @@ namespace xscreenshot {
             if (obj is string) {
                 return !string.IsNullOrWhiteSpace(obj);
             }
-                
+
             return true;
 
         }
@@ -103,7 +113,7 @@ namespace xscreenshot {
 
             var csc = new CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
             var p = new CompilerParameters(new[] { "mscorlib.dll", "System.Core.dll" }, null, true);
-            
+
             p.ReferencedAssemblies.Add(path);
             p.GenerateInMemory = true; p.GenerateExecutable = false;
             var type = "";
@@ -114,7 +124,7 @@ namespace xscreenshot {
             var instance = a.CreateInstance("p");
             return instance;
         }
-        
+
 
     }
 }
