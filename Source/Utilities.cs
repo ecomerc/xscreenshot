@@ -49,11 +49,13 @@ namespace xscreenshot {
         public static void Run(string command, string arguments, string workingDir = null, bool useShellExecute = false, Dictionary<string, string> environmentVariables = null) {
             var pi = new ProcessStartInfo(command, arguments) { UseShellExecute = useShellExecute };
 
-            foreach (var env in environmentVariables) {
-                if (pi.EnvironmentVariables.ContainsKey(env.Key))
-                    pi.EnvironmentVariables[env.Key] = env.Value;
-                else
-                    pi.EnvironmentVariables.Add(env.Key, env.Value);
+            if (environmentVariables != null) {
+                foreach (var env in environmentVariables) {
+                    if (pi.EnvironmentVariables.ContainsKey(env.Key))
+                        pi.EnvironmentVariables[env.Key] = env.Value;
+                    else
+                        pi.EnvironmentVariables.Add(env.Key, env.Value);
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(workingDir)) {

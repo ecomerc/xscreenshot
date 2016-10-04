@@ -139,6 +139,8 @@ namespace xscreenshot {
                 Console.WriteLine("For command line argument help: [-? | -h | --help]\n\n");
                 Console.WriteLine("Exiting.");
             } else {
+                p.Object.FixPaths();
+
                 try {
                     Console.WriteLine("Increasing features");
                     var init = Cecil.IncreaseFeatures.Init();
