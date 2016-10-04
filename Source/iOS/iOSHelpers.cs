@@ -159,6 +159,7 @@ namespace xscreenshot.iOS {
 
                     } catch (Exception ex) {
                         Console.WriteLine(string.Format("Could not run test: {0}", ex.Message));
+                        Console.WriteLine(ex.ToString());
                     }
 
                     if (Utilities.IsSet(Config.Global.iOS.SimulatorStatusMagicPath)) {
