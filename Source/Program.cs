@@ -172,7 +172,7 @@ namespace xscreenshot {
 
                     if (JsonConfig.Config.Global.iOS.AppPath == "{auto}") {
                         var path = iOS.iOSHelpers.GetXamarinAppAutomatically(JsonConfig.Config.Global.iOS.AppName);
-                        if (File.Exists(path))
+                        if (Directory.Exists(path))
                             JsonConfig.Config.Global.iOS.AppPath = path;
                     }
 
