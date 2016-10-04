@@ -54,8 +54,6 @@ namespace xscreenshot.Cecil {
             //if (definition.Name.Version.Revision == 1984)
             //    return true;
 
-            definition.Name.Version = new Version(definition.Name.Version.Major, definition.Name.Version.Minor, definition.Name.Version.Build, 1984);
-
             FieldDefinition fieldDefinition = new FieldDefinition(
                                 "AdditionalLaunchParameters",
                                 Mono.Cecil.FieldAttributes.Static | Mono.Cecil.FieldAttributes.Public, definition.MainModule.TypeSystem.String);
@@ -65,6 +63,8 @@ namespace xscreenshot.Cecil {
 
             if (staticFieldDestination.Fields.Count(f => f.Name == fieldDefinition.Name) == 1)
                 return true;
+
+			definition.Name.Version = new Version(definition.Name.Version.Major, definition.Name.Version.Minor, definition.Name.Version.Build, 1984);
 
             staticFieldDestination.Fields.Add(fieldDefinition);
             //                      "-w \"{5}\" -D \"{0}\" -t \"{1}\" \"{4}\" -e UIARESULTSPATH \"{2}\" -e UIASCRIPT \"{3}\""
