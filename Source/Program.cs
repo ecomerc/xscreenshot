@@ -189,8 +189,12 @@ namespace xscreenshot {
                 case ApplicationArguments.PlatformEnum.iOS:
 
 
+                    Console.WriteLine("Magic: " + args.MagicPath);
                     if (!string.IsNullOrWhiteSpace(args.MagicPath) && Directory.Exists(args.MagicPath))
                         JsonConfig.Config.Global.iOS.SimulatorStatusMagicPath = args.MagicPath;
+
+                    Console.WriteLine("Magic: " + JsonConfig.Config.Global.iOS.SimulatorStatusMagicPath);
+
 
                     if (!string.IsNullOrWhiteSpace(args.AppName)) {
                         JsonConfig.Config.Global.iOS.AppName = args.AppName;

@@ -110,6 +110,8 @@ namespace xscreenshot.iOS {
                         Console.WriteLine("Building Magic Status from " + Config.Global.iOS.SimulatorStatusMagicPath);
                         StatusMagic.Build(Config.Global.iOS.SimulatorStatusMagicPath, "iOS", new[] { device.UDID });
                         System.Threading.Thread.Sleep(1000);
+                    } else {
+                        Console.WriteLine("No magic path");
                     }
 
                     try {
